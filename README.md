@@ -58,7 +58,7 @@ RES-health tools
   * Deviation detection:  Our models for the expected behavior aim to provide a tool for detecting periods where the target variable has a deviating behavior. This deviating behavior is typically slowly progressing, so it cannot be detected as a changepoint, since changepoints refer to rapid changes.  This component provides a toolkit for analysing historical data and detecting deviating periods in a time series which is completely known when our models are deployed.    
   * Real-time deviation detection: Using our models for the expected behavior of a target variable, we are also able to make real-time deviation detection. Real-time deviation detection refers to a scenario where new data points are received, as a stream.
   
-  Link to the notebook:[Deviation Detection](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/deviation_detection_basic.ipynb)
+  Link to the notebook: [Deviation Detection](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/deviation_detection_basic.ipynb)
 
 
 2. **Behavior Detection**
@@ -79,6 +79,7 @@ The steps of the Behavior detection tool are presented here.
 * Behavior detection. Refers to the detection of the behavior of newly incoming data based on the available labels and utilizing an aggregate of the predictions of the multiple models trained in different bins or regions of the training datasets. 
 
   Link to the notebook: [Direct Behavior Detection ](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/Direct_model_Evaluation_method.ipynb)
+  
   Link to the notebook: [Indirect Behavior Detection ](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/Indirect_model_Evaluation_Naive.ipynb)
   
 3. **Forecasting**
