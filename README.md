@@ -109,8 +109,12 @@ The steps of the Underperformance detection tool are presented here.
 
 
 5. **Oscillation Detection**
+In this section, we present our tool for the detection of oscillations in streams of voltage/current measurement. Within the scope of this use case, we explore automated methods for the real-time detection of oscillations. Detecting oscillations can be a challenging task due to various reasons such as noise in the data. Moreover, power systems can exhibit different types of oscillations such as inter-area oscillations or local oscillations. Our use-case scenario concerns oscillations measured at the Point of Connection (POC). POC is the point that the plant is connected to the grid. Such oscillations may have a frequency of 0.1 to 2.5 Hz.
 
-
+The steps of Oscillation detection tool are presented here.
+* Approximation: This step consists of methods for approximating a signal that is assumed to behave as an oscillation in the sense that it can be accurately approximated as a sinusoidal function (or a sum of sinusoidal functions). We implement various methods including methods that have been previously employed in the context of oscillation analysis (Prony’s method, Matrix-Pencil), non-linear regression by means of the Levenberg-Marquardt algorithm, and a simple Fast Fourier Transformation (FFT) analysis.
+* Alerting: Using the abovementioned sinusoidal approximation of a recent window of signal, we calculate the residuals, and by comparing them with the previously seen values we determine whether the newly retrieved data can be approximated by a sinusoidal unusually well.
+  
   Link to the notebook: [Oscillation Detection](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/OS_comparison_all_methods.ipynb)
 
 
