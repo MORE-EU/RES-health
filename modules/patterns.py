@@ -404,6 +404,18 @@ def segment_ts(mpi, k_optimal, path, L=None, regions=4, excl_factor=5):
 
     
 def summary_motifs(mot,wholedict,Ranking,show_best=True):
+    """
+    Summarizes motif information and returns a DataFrame.
+
+    Args:
+        mot: List of motifs to summarize.
+        wholedict: Dictionary containing motif information.
+        Ranking: Dictionary containing motif rankings.
+        show_best: Boolean indicating whether to show only the best motifs (default is True).
+
+    Returns:
+        df_output: DataFrame containing motif summary information.
+    """
     
     dflist=[]
     for m in mot:
@@ -418,12 +430,37 @@ def summary_motifs(mot,wholedict,Ranking,show_best=True):
 
             
 def get_corrected_matrix_profile(matrix_profile, annotation_vector):
+    """
+    Corrects the matrix profile using an annotation vector.
+
+    Args:
+        matrix_profile: The matrix profile to be corrected.
+        annotation_vector: The annotation vector used for correction.
+
+    Returns:
+        corrected_matrix_profile: The corrected matrix profile.
+    """
     corrected_matrix_profile = matrix_profile.copy()    
     corrected_matrix_profile[:, 0] = matrix_profile[:, 0] + ((1 - annotation_vector) * np.max(matrix_profile[:, 0]))
     return corrected_matrix_profile
 
 
 def Ranker(df,mot,miclean,mdclean,df_rains_output,df_wash_output):
+    """
+    Ranks motifs based on various criteria.
+
+    Args:
+        df: pandas dataframe containing data.
+        mot: list of motifs to be ranked.
+        miclean: cleaned motif indexes.
+        mdclean: cleaned motif distances.
+        df_rains_output: dataframe with rain data.
+        df_wash_output: dataframe with wash data.
+
+    Returns:
+        Ranker: a dictionary containing ranking scores for each motif.
+        wholedict: a nested dictionary containing detailed information about motifs.
+    """
     Ranker={}
     wholedict={}
     dates = pd.DataFrame(index=range(len(df)))
@@ -524,6 +561,24 @@ def Ranker(df,mot,miclean,mdclean,df_rains_output,df_wash_output):
 
 
 def clean_motifs(corrected,mot,dailypower,max_motifs=25,min_nei=1,max_di=None,cut=None,max_matc=200):
+    """
+    Cleans motifs based on various criteria.
+
+    Args:
+        corrected: Corrected matrix profile.
+        mot: List of motifs.
+        dailypower: Daily power data.
+        max_motifs: Maximum number of motifs.
+        min_nei: Minimum number of neighbors.
+        max_di: Maximum distance.
+        cut: Cutoff parameter.
+        max_matc: Maximum matches parameter.
+
+    Returns:
+        miclean: Cleaned motif indexes.
+        mdclean: Cleaned motif distances.
+    """
+
     md={}
     mi={}
     mdtest={}
