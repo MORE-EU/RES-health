@@ -90,6 +90,7 @@ The steps of the Behavior detection tool are presented here.
 * Feature engineering: This refers to introducing features for encoding the time component and lagged features to take into account dependencies between the target (future) variable and recent, past measurements.
 *  Model training: This refers to fitting a regression model on a set of historical data that have been preprocessed as described above. For this step, we employ a gradient boosting framework that uses a histogram-based approach to efficiently train decision tree models, namely [LightGBM](https://lightgbm.readthedocs.io/en/latest/index.html)
 * Prediction: This refers to using the abovementioned model to make predictions of the target variable for the future. To account for multiple future values, we employ a regression chain, a standard machine learning technique used for multi-output regression problems
+  
   Link to the notebook: [Forecasting](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/Forecasting_tool.ipynb)
 
 4. **Underperformance Detection**
