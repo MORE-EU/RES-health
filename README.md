@@ -96,6 +96,15 @@ The steps of the Behavior detection tool are presented here.
 
 4. **Underperformance Detection**
 
+In this section, we present our novel tool for estimating and extracting periods of underperformance in wind data, as well as for detecting underperformance in newly incoming data. Specifically, the problem involves identifying instances in the time series where the target variable exhibits values significantly lower than expected.
+
+The steps of the Underperformance detection tool are presented here.
+* Quantile regression: This refers to fitting a quantile regression model for one of the highest quantiles, e.g., 0.8 or 0.9, in a set of historical data. Intuitively, this model aims to approximate the optimal performance (or an overestimation) from a set of data that possibly contains underperforming periods.
+* Underperformance extraction: This refers to using the above model to extract periods of underperformance in the same historical data as follows: we compute the (signed) residuals between the predicted and the actual values and we extract periods during which we observe consecutive large residuals, i.e., the actual values are unusually small for a substantial period of time. This step essentially assigns labels to the data, which allows us to employ supervised methods
+* Classifier training: Having extracted periods of underperformance, we train a LightGBM classifier to predict whether a certain feature vector is associated with underperformance or not. We use as feature variables the ones used in quantile regression, along with the target variable (whose “underperformance” is to be detected)
+* Prediction: Using the abovementioned classifier, we can determine whether new incoming data correspond to underperformance
+
+
   Link to the notebook: [Underperformance Detection](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/underperformance_detection.ipynb)
 
 
