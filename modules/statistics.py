@@ -11,18 +11,31 @@ def mape1(y_true, y_pred):
     Args:
         y_true: A numpy array that contains the actual values of the time series.
         y_pred: A numpy array that contains the predicted values of the time series.
-    
-    Return: 
-        Mean Absolute Percentage Error value.
-            
-        
-    """
-    y_true = y_true.ravel()
-    y_pred = y_pred.ravel()
-    mape1 = (np.mean(np.abs(y_true-y_pred)/np.mean(y_true)))
-    
-    return mape1
 
+    Return:
+        Mean Absolute Percentage Error value.
+
+
+    """
+    if y_true.ndim >= 2 and y_pred.ndim >= 2:
+        mapes = []
+
+        nom = np.sum(np.abs(y_true - y_pred), axis=1)
+        denom = np.sum(np.abs(y_true + y_pred), axis=1)
+        
+#         denom = np.sum(np.abs(y_true), axis=1)
+
+        mapes = nom/denom
+        mape1 = np.mean(mapes)
+        return mape1
+    else:
+        y_true = y_true.ravel()
+        y_pred = y_pred.ravel()
+       
+        mape1 = (np.sum(np.abs(y_true-y_pred)/np.sum(np.abs(y_true+y_pred))))
+        
+              
+        return mape1
 
 def mpe1(y_true, y_pred):
 
@@ -32,11 +45,11 @@ def mpe1(y_true, y_pred):
     Args:
         y_true: A numpy array that contains the actual values of the time series.
         y_pred: A numpy array that contains the predicted values of the time series.
-    
-    Return: 
+
+    Return:
         Mean Absolute Error value.
-            
-        
+
+
     """
     mpe1 = (np.mean(y_true-y_pred)/np.mean(y_true))
     return mpe1
@@ -66,6 +79,7 @@ def score(y_true, y_pred):
     med = np.median(y_true-y_pred)
 
     return r_sq, mae, me, mape, mpe, med
+
 
 
 def get_top_deviations(scores, metric='mpe', n=5):
@@ -122,3 +136,45 @@ def score_segment(y_true, y_pred):
     loss_mean = (np.mean(y_true/y_pred))-1
     loss_aggregate = len(y_true)-np.sum(y_true/y_pred)
     return loss_median, loss_mean, loss_aggregate
+
+
+def scorer(test): 
+     """
+    Calculate various evaluation metrics for a given test set.
+
+    Args:
+        test (pandas.DataFrame): DataFrame with predicted and actual values.
+
+    Returns:
+        float: F1 score.
+        float: Precision score.
+        float: Recall score.
+        float: Hamming loss.
+        float: Jaccard score.
+        float: Cohen's Kappa score.
+        float: ROC AUC score.
+    """
+    f1=sklearn.metrics.f1_score(test.actual, test.pred)
+    ps=sklearn.metrics.precision_score(test.actual, test.pred,zero_division=0)
+    recal=sklearn.metrics.recall_score(test.actual, test.pred)
+    hamming=sklearn.metrics.hamming_loss(test.actual, test.pred)
+    jaccard=sklearn.metrics.jaccard_score(test.actual, test.pred,zero_division=0)
+    cohen=sklearn.metrics.cohen_kappa_score(test.actual, test.pred)
+    roc=sklearn.metrics.roc_auc_score(test.actual, test.pred)
+    return f1,ps,recal,hamming,jaccard,cohen,roc
+
+
+def percentage_of_misses(true, predicted):
+    """
+    Calculate the percentage of misses (instances where true values are less than predicted values).
+
+    Args:
+        true (numpy.ndarray): True values.
+        predicted (numpy.ndarray): Predicted values.
+
+    Returns:
+        float: Percentage of misses.
+    """
+    ratio = np.sum(true < predicted) / len(true)
+    return ratio
+
