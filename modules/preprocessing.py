@@ -279,14 +279,32 @@ def unit_norm_df(df):
 
 
 def outliers_IQR(df):
-    Q1 = df.quantile(0.25)
-    Q3 = df.quantile(0.75)
+    """
+    Remove outliers from a DataFrame using the IQR (Interquartile Range) method.
+
+    Args:
+        df (pandas.DataFrame): The input DataFrame.
+
+    Returns:
+        pandas.DataFrame: The DataFrame with outliers removed.
+    """
+    Q1 = df.quantile(0.10)
+    Q3 = df.quantile(0.90)
     IQR = Q3 - Q1
     df_iqr = df[~((df < (Q1 - 1.5 * IQR)) | (df >(Q3 + 1.5 * IQR))).any(axis=1)]
     return df_iqr
 
-
 def outliers_LoF(df, n_neighbors=300):
+     """
+    Remove outliers from a DataFrame using the Local Outlier Factor (LoF) method.
+
+    Args:
+        df (pandas.DataFrame): The input DataFrame.
+        n_neighbors (int): The number of neighbors to consider for the LoF calculation.
+
+    Returns:
+        pandas.DataFrame: The DataFrame with outliers removed.
+    """
     clf = LocalOutlierFactor(n_neighbors=n_neighbors, n_jobs=16)
     res = clf.fit_predict(df)
     df = df[res == 1]
@@ -294,6 +312,19 @@ def outliers_LoF(df, n_neighbors=300):
 
 
 def split_to_bins(df, bin_size, mini, maxi, feat):
+    """
+    Split a DataFrame into bins based on a specified feature.
+
+    Args:
+        df (pandas.DataFrame): The input DataFrame.
+        bin_size (float): The size of each bin.
+        mini (float): The minimum value for binning.
+        maxi (float): The maximum value for binning.
+        feat (str): The feature column for binning.
+
+    Returns:
+        list: List of masks indicating bin membership for each bin.
+    """
     bins = np.arange(mini, maxi, bin_size)
     bins = np.append(bins, maxi)
     bin_masks = []
@@ -305,7 +336,253 @@ def split_to_bins(df, bin_size, mini, maxi, feat):
 
 
 def create_scaler(dfs):
+    """
+    Create a scaler for data transformation.
+
+    Args:
+        dfs (list of pandas.DataFrames): List of DataFrames to create the scaler.
+
+    Returns:
+        sklearn.preprocessing.MinMaxScaler: Fitted MinMaxScaler for data transformation.
+    """
     df = pd.concat(dfs)
     min_max_scaler = MinMaxScaler()
     fitted_scaler = min_max_scaler.fit(df)
     return fitted_scaler
+
+def soiling_dates(df,y=0.992,plot=True):
+     """
+    Extracts soiling event dates from a pandas DataFrame.
+
+    Args:
+        df (pandas.DataFrame): The input DataFrame with a 'soiling_derate' column.
+        y (float): The depth threshold for considering soiling periods.
+        plot (bool): Whether to plot the derate with soiling event indications.
+
+    Returns:
+        pandas.DataFrame: A DataFrame containing the start and stop dates of soiling events.
+    """
+    soil = pd.concat([pd.Series({f'{df.index[0]}': 1}),df.soiling_derate])
+    soil.index = pd.to_datetime(soil.index)
+    df_dates = pd.DataFrame(index = soil.index)
+    df_dates["soil_start"] = soil[(soil == 1) & (soil.shift(-1) < 1)] # compare current to next
+    df_dates["soil_stop"] = soil[(soil == 1) & (soil.shift(1) < 1)] # compare current to prev
+    dates_soil_start = pd.Series(df_dates.soil_start.index[df_dates.soil_start.notna()])
+    dates_soil_stop = pd.Series(df_dates.soil_stop.index[df_dates.soil_stop.notna()])
+
+    #Filter significant rains with more than 'x' percipitation
+    ids = []
+    x=y
+    for idx in range(dates_soil_start.size):
+        d1 = dates_soil_start[idx]
+        d2 = dates_soil_stop[idx]
+        if np.min(soil.loc[d1:d2]) <= x:
+            ids.append(idx)
+    dates_soil_start_filtered = dates_soil_start[ids]
+    dates_soil_stop_filtered = dates_soil_stop[ids]
+
+    #df forsignificant rains.
+    df_soil_output = pd.DataFrame.from_dict({"SoilStart": dates_soil_start_filtered, "SoilStop": dates_soil_stop_filtered})
+    df_soil_output=df_soil_output.reset_index(drop='index')
+    df_soil_output.reset_index(drop='index',inplace=True)
+    print(f"We found {df_soil_output.shape[0]} Soiling Events with decay less than {x} ")
+
+    if plot:
+        print('The indication of the start of a Soil is presented with Bold line')
+        print('The indication of the end of a Soil is presented with Uncontinious line')
+        ax=df.soiling_derate.plot(figsize=(20,10),label='Soil Derate',color='green')
+        for d in df_soil_output.SoilStart:
+            ax.axvline(x=d, color='grey', linestyle='-')
+        for d in df_soil_output.SoilStop:
+            ax.axvline(x=d, color='grey', linestyle=':') 
+        ax.set_title('Power Output', fontsize=8)
+        plt.legend(fontsize=8)
+        plt.show()
+        
+    return df_soil_output
+
+
+
+
+def list_of_soil_index(df,df_soil_output,days):
+    """
+    Creates a list of discrete indexes corresponding to soiling events.
+
+    Args:
+        df (pandas.DataFrame): The input DataFrame.
+        df_soil_output (pandas.DataFrame): A DataFrame containing soiling event start and stop dates.
+        days (int): The number of days to shift the index of soiling events.
+
+    Returns:
+        list: A list of lists, where each inner list contains indexes for a soiling event.
+    """
+    temp=df.reset_index()
+    list_soil_index=[]
+    for i in range(len(df_soil_output)):
+        list_soil_index.append(list(range(temp[temp.timestamp==df_soil_output.SoilStart[i]].index[0]-days,
+                                          temp[temp.timestamp==df_soil_output.SoilStop[i]].index[0])))
+    lista_me_ta_index_apo_soil=[]
+    for i in range(len(list_soil_index)):
+        for j in range(len(list_soil_index[i])):
+            lista_me_ta_index_apo_soil.append(list_soil_index[i][j])
+    return lista_me_ta_index_apo_soil
+    
+def list_of_all_motifs_indexes(mi,new_population,row):
+    """
+    Creates a list of discrete indexes from found motifs.
+
+    Args:
+        mi: Motif indexes.
+        new_population: Population of individuals.
+        row: The index of each individual.
+
+    Returns:
+        list: A list of lists, where each inner list contains indexes for a motif.
+    """
+    lista_listwn=[]
+    for mtyp in range(len(mi)):
+        try1=[]
+        for i in mi[mtyp]:
+            try1.append(list(range(i,i+int(new_population[row,5]))))
+        listamot=[]
+        for i in range(len(try1)):
+            for j in range(len(try1[i])):
+                listamot.append(try1[i][j])
+
+        lista_listwn.append(listamot)
+    return lista_listwn
+
+def list_of_soil_index_start(df,df_soil_output,days):
+    """
+    Creates a list of discrete indexes corresponding to soiling event start dates.
+
+    Args:
+        df (pandas.DataFrame): The input DataFrame.
+        df_soil_output (pandas.DataFrame): A DataFrame containing soiling event start and stop dates.
+        days (int): The number of days to shift the index of soiling events.
+
+    Returns:
+        list: A list of indexes corresponding to soiling event start dates.
+    """
+    temp=df.reset_index()
+    list_soil_index=[]
+    for i in range(len(df_soil_output)):
+        list_soil_index.append(temp[temp.timestamp==df_soil_output.SoilStart[i]].index[0]-days)
+    return list_soil_index
+     
+def list_of_all_motifs_indexes_start(mi):
+    """
+    Creates a list of discrete indexes from found motifs.
+
+    Args:
+        mi: Motif indexes.
+
+    Returns:
+        list: A list of lists, where each inner list contains indexes for a motif.
+    """
+    lista_listwn=[]
+    for mtyp in range(len(mi)):
+        try1=[]
+        for i in mi[mtyp]:
+            try1.append(i)
+       
+        lista_listwn.append(try1)
+
+    return lista_listwn
+
+def reg_container(df,test_index,future_steps,pipeline,df_test,fit_features,pipeline_lower,target_features):
+    """
+    Fits regression models, stores predictions, and calculates MAPE values for different labels.
+
+    Args:
+        df: DataFrame with training data.
+        test_index: Index for the test data.
+        future_steps: Number of future steps to predict.
+        pipeline: The primary regression model pipeline.
+        df_test: DataFrame with test data.
+        fit_features: Features used for fitting the model.
+        pipeline_lower: A secondary regression model pipeline.
+        target_features: Target features for prediction.
+
+    Returns:
+        p_list_pred: Predicted values for each label.
+        p_list_pred_lower: Predicted values (secondary model) for each label.
+        p_list: Ground truth values for each label.
+        all_mapes: List of MAPE values for each label.
+    """
+    all_mapes = []
+    p_list_pred = []
+    p_list_pred_lower = []
+    p_list = []
+    for l in np.unique(df.label):
+        try:
+            unq_idx = test_index.drop_duplicates()
+            temp = np.empty((unq_idx.shape[0], future_steps))
+            temp[:] = 1e-6
+            result_container = pd.DataFrame(temp.copy(), index=unq_idx)
+
+            y_pred_test = pipeline.predict(df_test.loc[df_test.label==l][fit_features].values)
+            result_temp = pd.DataFrame(y_pred_test, index=df_test.loc[df_test.label==l].index)
+            result_container.loc[result_temp.index] = result_temp
+
+            result_container_lower = pd.DataFrame(temp.copy(), index=unq_idx)
+            y_pred_test_lower =pipeline_lower.predict(df_test.loc[df_test.label==l][fit_features].values)
+            result_temp_lower = pd.DataFrame(y_pred_test_lower, index=df_test.loc[df_test.label==l].index)
+            result_container_lower.loc[result_temp_lower.index] = result_temp_lower
+
+
+
+            gt_container = pd.DataFrame(temp.copy(), index=unq_idx)
+            y_test = df_test.loc[df_test.label==l][target_features]
+            gt_temp = pd.DataFrame(y_test, index=df_test.loc[df_test.label==l].index)
+            gt_container.loc[gt_temp.index] = gt_temp
+            p_list_pred.append(result_container.copy())
+            p_list_pred_lower.append(result_container_lower.copy())
+            p_list.append(gt_container.copy())
+            all_mapes.append(mape1(y_test, y_pred_test))
+        except:
+            print(l)
+    return p_list_pred,p_list_pred_lower,p_list,all_mapes
+
+
+
+def pred_gt_list(df,test_index,df_test,fit_features,target_features,pipeline):
+    """
+    Fits regression models, stores predictions, and calculates MAPE values for different labels.
+
+    Args:
+        df: DataFrame with training data.
+        test_index: Index for the test data.
+        df_test: DataFrame with test data.
+        fit_features: Features used for fitting the model.
+        target_features: Target features for prediction.
+        pipeline: The primary regression model pipeline.
+
+    Returns:
+        p_list_pred: Predicted values for each label.
+        p_list: Ground truth values for each label.
+        all_mapes: List of MAPE values for each label.
+    """
+    p_list_pred=[]
+    p_list=[]
+    all_mapes=[]
+    for l in np.unique(df.label):
+        try:
+            unq_idx = test_index.drop_duplicates()
+            temp = np.empty((unq_idx.shape[0], future_steps))
+            temp[:] = 1e-1
+            result_container = pd.DataFrame(temp.copy(), index=unq_idx)
+            y_pred_test =pipeline.predict(df_test.loc[df_test.label==l][fit_features].values)
+            result_temp = pd.DataFrame(y_pred_test, index=df_test.loc[df_test.label==l].index)
+            result_container.loc[result_temp.index] = result_temp
+            gt_container = pd.DataFrame(temp.copy(), index=unq_idx)
+            y_test = df_test.loc[df_test.label==l][target_features]
+            gt_temp = pd.DataFrame(y_test, index=df_test.loc[df_test.label==l].index)
+            gt_container.loc[gt_temp.index] = gt_temp
+            p_list_pred.append(result_container.copy())
+            p_list.append(gt_container.copy())
+            all_mapes.append(mape1(y_test, y_pred_test))
+
+        except:
+            print(l)
+    return p_list_pred,p_list,all_mapes
