@@ -41,7 +41,7 @@ The module consists of the following steps:
   to approximating a time series by means of a regression model. Those functions are needed, for example, when we are trying to discover trends or changepoints. 
 
 RES-health tools
-=============================
+================
   The execution of the project starts with the presentation of the tools. 
 
 1. **Deviation Detection**
@@ -58,7 +58,7 @@ RES-health tools
   * Deviation detection:  Our models for the expected behavior aim to provide a tool for detecting periods where the target variable has a deviating behavior. This deviating behavior is typically slowly progressing, so it cannot be detected as a changepoint, since changepoints refer to rapid changes.  This component provides a toolkit for analysing historical data and detecting deviating periods in a time series which is completely known when our models are deployed.    
   * Real-time deviation detection: Using our models for the expected behavior of a target variable, we are also able to make real-time deviation detection. Real-time deviation detection refers to a scenario where new data points are received, as a stream.
   
-  Link to the notebook:[Deviation Detection](https://github.com/MORE-EU/more-pattern-extraction/blob/main/notebooks/deviation_detection.ipynb)###allagi
+  Link to the notebook:[Deviation Detection](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/deviation_detection_basic.ipynb)
 
 
 2. **Behavior Detection**
@@ -78,8 +78,9 @@ The steps of the Behavior detection tool are presented here.
 * Indirect Modelling: This component includes solutions that work by modelling the behavior of the time-series during (labelled) periods and then assigning labels depending on how well those models approximate the behavior of the newly incoming data. 
 * Behavior detection. Refers to the detection of the behavior of newly incoming data based on the available labels and utilizing an aggregate of the predictions of the multiple models trained in different bins or regions of the training datasets. 
 
-  Link to the notebook: [Behavior Detection](https://github.com/MORE-EU/more-pattern-extraction/blob/main/notebooks/semantic_segmentation.ipynb)###allagi
-
+  Link to the notebook: [Direct Behavior Detection ](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/Direct_model_Evaluation_method.ipynb)
+  Link to the notebook: [Indirect Behavior Detection ](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/Indirect_model_Evaluation_Naive.ipynb)
+  
 3. **Forecasting**
 
  This section discusses the challenges and importance of forecasting the power output of wind turbines in the context of variable renewable energy sources (vRES). As vRES penetration levels increase, they introduce more variability and unpredictability to electricity generation, leading to volatile energy market prices. The objective of this tool is to predict a safe underestimate of the minimum power output for each hour over the next two days based on the weather data.
@@ -90,6 +91,17 @@ The steps of the Behavior detection tool are presented here.
 *  Model training: This refers to fitting a regression model on a set of historical data that have been preprocessed as described above. For this step, we employ a gradient boosting framework that uses a histogram-based approach to efficiently train decision tree models, namely [LightGBM](https://lightgbm.readthedocs.io/en/latest/index.html)
 * Prediction: This refers to using the abovementioned model to make predictions of the target variable for the future. To account for multiple future values, we employ a regression chain, a standard machine learning technique used for multi-output regression problems
   Link to the notebook: [Forecasting](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/Forecasting_tool.ipynb)
+
+4. **Underperformance Detection**
+
+  Link to the notebook: [Underperformance Detection](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/underperformance_detection.ipynb)
+
+
+5. **Oscillation Detection**
+
+
+  Link to the notebook: [Oscillation Detection](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/OS_comparison_all_methods.ipynb)
+
 
 
 
