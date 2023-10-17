@@ -154,9 +154,11 @@ The above libraries are included in the requirements.txt file. In addition, **ju
 We should also note that if one decided to use a virtual environment, they have to install jupyter-notebook, according to the instructions, inside the activated virtual environment.
 
 Now in order to run the notebook implementing this tool, one first needs to start jupyter-notebook (Note, if a virtual environment is used start the notebook inside the activated environment):
+
 **$ jupyter-notebook**
 
 This will open a new tab in the default internet browser where one must select and run the following Jupyter notebook file:
+
 **<path>/ complex-event-detection/notebooks/tools/<notebook>**
 
 
