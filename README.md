@@ -159,7 +159,7 @@ Now in order to run the notebook implementing this tool, one first needs to star
 
 This will open a new tab in the default internet browser where one must select and run the following Jupyter notebook file:
 
-** <path>/RES-health/notebooks/tools/<notebook> **
+**path/RES-health/notebooks/tools/<notebook>**
 
 
 Documentation
