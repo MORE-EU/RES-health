@@ -117,7 +117,47 @@ The steps of Oscillation detection tool are presented here.
   
   Link to the notebook: [Oscillation Detection](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/OS_comparison_all_methods.ipynb)
 
+Installation
+============
+Python 3.8.5+ is required. For a guide on how to install python, one can visit [Python](https://www.python.org/). In order to check the version of python installed in the system, one can run:
 
+**$python  -- version**
+
+One should start by downloading the latest version of our source code. If git is installed, this step can be implemented as follows:
+
+**$ git clone https://github.com/MORE-EU/RES-health/tree/main -- recursive**
+
+One new folder under the name RES-health will be created. Let <path> be the absolute path to that folder, i.e., the new folder is <path>/RES-health.
+
+It is preferable to use a virtual environment, which will host all necessary libraries, as follows:
+
+**$ python3 -m venv <path/to/new/virtualenv/>**
+
+**$ source <path/to/new/virtualenv/>/bin/activate**
+
+Now, with the virtual environment activated one can proceed to install the required libraries.
+
+The required libraries are:
+
+• pandas - 1.3.3
+
+• matplotlib - 3.4.2
+
+• numpy - 1.20.1
+
+• scikit_learn - 1.0.2
+
+The above libraries are included in the requirements.txt file. In addition, **jupyter-notebook** must also be installed by executing the following command:
+
+**$ pip install pip install notebook**
+
+We should also note that if one decided to use a virtual environment, they have to install jupyter-notebook, according to the instructions, inside the activated virtual environment.
+
+Now in order to run the notebook implementing this tool, one first needs to start jupyter-notebook (Note, if a virtual environment is used start the notebook inside the activated environment):
+**$ jupyter-notebook**
+
+This will open a new tab in the default internet browser where one must select and run the following Jupyter notebook file:
+**<path>/ complex-event-detection/notebooks/tools/<notebook>**
 
 
 Documentation
