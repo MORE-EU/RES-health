@@ -4,7 +4,7 @@ RES health monitoring toolkit
 (initial integrated version of the platform) <br>
 
 
-  RES-health is a python library for implementing utilities which aim to fulfil a full Event Detection  workflow for analysing time series data. RES-health implements a series of training features, for the input time series, running variations of deviation detection algorithms in order to identify change points with a mixture of supervised and semi supervised methods so to achieve real time results , then behavior detection so to create two type of models, in order to find the most fitting model for the data at hand. Lastly a motif detection tool to extract motifs for summarized time series and for the deviation detection tool.  
+RES-health is a Python library for Pattern Extraction and Complex Event Detection in time series from Renewable Energy Sources (RES). RES-health implements various analytical tools with an emphasis on real-world use cases with RES data. In short, the library contains tools for deviation/behavior detection, detection of failures, forecasting, pattern extraction. Further details on the implemented tools and associated modules follow.
   
 Description
 ===========	
