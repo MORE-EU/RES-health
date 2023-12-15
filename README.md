@@ -118,7 +118,8 @@ The steps of Oscillation detection tool are presented here.
   Link to the notebook: [Oscillation Detection](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/OS_comparison_all_methods.ipynb)
 
 6. **Generic Pattern Matching**
-   The set of tools for pattern extraction also includes a generic pattern matching algorithm namely Frechet-based Efficient Time-series Comparison Heuristic. The repository can be found in:  [Fetch](https://github.com/MORE-EU/fetch)
+   The set of tools for pattern extraction also includes a generic pattern matching algorithm namely Frechet-based Efficient Time-series Comparison Heuristic.
+   The repository can be found in:  [Fetch](https://github.com/MORE-EU/fetch)
 
 Installation
 ============
