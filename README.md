@@ -117,6 +117,9 @@ The steps of Oscillation detection tool are presented here.
   
   Link to the notebook: [Oscillation Detection](https://github.com/MORE-EU/RES-health/blob/main/notebooks/tools/OS_comparison_all_methods.ipynb)
 
+6. **Generic Pattern Matching**
+   The set of tools for pattern extraction also includes a generic pattern matching algorithm namely Frechet-based Efficient Time-series Comparison Heuristic. The repository can be found in:  [Fetch](https://github.com/MORE-EU/fetch)
+
 Installation
 ============
 Python 3.8.5+ is required. For a guide on how to install python, one can visit [Python](https://www.python.org/). In order to check the version of python installed in the system, one can run:
