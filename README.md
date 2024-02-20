@@ -170,4 +170,4 @@ Documentation
 =============
 
 Source code documentation is available from GitHub pages [Link](https://more-eu.github.io/more-pattern-extraction/)
-[//]: <update>
+<update>
